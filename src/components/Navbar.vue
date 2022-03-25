@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light">
-    <div class="container-fluid">
+    <div class="container">
       <router-link to="/" class="navbar-brand"
         ><img src="@/assets/logo.png" alt="" srcset="" width="150"
       /></router-link>
@@ -20,17 +20,33 @@
           <li class="nav-item">
             <router-link
               to="/"
-              class="nav-link active"
+              class="nav-link"
               aria-current="page"
               >Home</router-link
             >
           </li>
           <li class="nav-item">
             <router-link
-              to="/"
-              class="nav-link active"
+              to="/admin-login"
+              class="nav-link"
               aria-current="page"
-              >Login</router-link
+              >Admin Login</router-link
+            >
+          </li>
+          <li class="nav-item">
+            <router-link
+              to="/doctor-login"
+              class="nav-link"
+              aria-current="page"
+              >Doctor Login</router-link
+            >
+          </li>
+          <li class="nav-item">
+            <router-link
+              to="/student-login"
+              class="nav-link"
+              aria-current="page"
+              >Student Login</router-link
             >
           </li>
         </ul>
