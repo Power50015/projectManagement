@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +22,11 @@ const router = createRouter({
       path: "/student-login",
       name: "student-login",
       component: () => import("../views/StudentLoginView.vue"),
+    },
+    {
+      path: "/dashbord",
+      name: "dashbord",
+      component: () => import("../views/DashbordView.vue"),
     },
   ],
 });

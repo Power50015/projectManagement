@@ -31,6 +31,41 @@ const unsub = await onAuthStateChanged(auth, async (user) => {
     );
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
+      const q = query(
+        collection(db, "admins"),
+        where("email", "==", user.email)
+      );
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        const q = query(
+          collection(db, "students"),
+          where("email", "==", user.email)
+        );
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          const auth = useAuthStore();
+          auth.userId = doc.id;
+          auth.isLogin = true;
+          auth.name = doc.data().name;
+          auth.email = doc.data().email;
+          auth.photo = doc.data().photo;
+          auth.projectId = doc.data().projectId;
+          auth.departement = doc.data().departement;
+          auth.type = "students";
+        });
+      } else {
+        querySnapshot.forEach((doc) => {
+          const auth = useAuthStore();
+          auth.userId = doc.id;
+          auth.isLogin = true;
+          auth.name = doc.data().name;
+          auth.email = doc.data().email;
+          auth.photo = doc.data().photo;
+          auth.projectId = doc.data().projectId;
+          auth.departement = doc.data().departement;
+          auth.type = "admins";
+        });
+      }
     } else {
       querySnapshot.forEach((doc) => {
         const auth = useAuthStore();
@@ -45,6 +80,8 @@ const unsub = await onAuthStateChanged(auth, async (user) => {
       });
     }
   }
+  const auth = useAuthStore();
+  auth.load = true;
   unsub();
 });
 
@@ -59,6 +96,7 @@ export const useAuthStore = defineStore({
     projectId: "",
     departement: "",
     type: "",
+    load: false,
   }),
   actions: {
     doctorLogin(email: string, password: string) {
@@ -90,10 +128,7 @@ export const useAuthStore = defineStore({
     adminLogin(email: string, password: string) {
       signInWithEmailAndPassword(auth, email, password)
         .then(async () => {
-          const q = query(
-            collection(db, "admin"),
-            where("email", "==", email)
-          );
+          const q = query(collection(db, "admin"), where("email", "==", email));
           const querySnapshot = await getDocs(q);
           querySnapshot.forEach((doc) => {
             this.isLogin = true;

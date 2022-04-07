@@ -30,6 +30,7 @@
               to="/admin-login"
               class="nav-link"
               aria-current="page"
+              v-if="!auth.isLogin"
               >Admin Login</router-link
             >
           </li>
@@ -38,6 +39,7 @@
               to="/doctor-login"
               class="nav-link"
               aria-current="page"
+              v-if="!auth.isLogin"
               >Doctor Login</router-link
             >
           </li>
@@ -46,6 +48,7 @@
               to="/student-login"
               class="nav-link"
               aria-current="page"
+              v-if="!auth.isLogin"
               >Student Login</router-link
             >
           </li>
@@ -56,6 +59,9 @@
 </template>
 
 <script lang="ts" setup>
+import { useAuthStore } from "@/stores/auth";
+
+const auth = useAuthStore();
 </script>
 
 <style>

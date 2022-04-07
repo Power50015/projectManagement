@@ -6,14 +6,14 @@
 
         <div class="col-lg-12 login-form">
           <div class="col-lg-12 login-form">
-            <form>
+            <form @submit.prevent="adminLogin">
               <div class="form-group">
                 <label class="form-control-label">USEREMAIL</label>
-                <input type="text" class="form-control" />
+                <input type="text" class="form-control" v-model="email"/>
               </div>
               <div class="form-group">
                 <label class="form-control-label">PASSWORD</label>
-                <input type="password" class="form-control" i />
+                <input type="password" class="form-control" v-model="password" />
               </div>
 
               <div class="col-lg-12 loginbttm">
@@ -34,7 +34,25 @@
   </div>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { useAuthStore } from "@/stores/auth";
+import { ref } from "@vue/reactivity";
+import { useRouter } from "vue-router";
+const router = useRouter();
+const auth = useAuthStore();
+
+const email = ref<string>("myadmin@admin.com");
+const password = ref<string>("myadmin@admin.com");
+
+function adminLogin() {
+  auth.adminLogin(email.value, password.value);
+  console.log(auth);
+  
+  email.value = "";
+  password.value = "";
+  // router.push("/");
+}
+</script>
 
 <style scoped>
 .row {
@@ -73,7 +91,7 @@ input {
   outline: 0;
   margin-bottom: 20px;
   padding-left: 0px;
-  color: #ecf0f5;
+  /* color: #ecf0f5; */
 }
 
 .form-group {
@@ -87,7 +105,7 @@ input {
   box-shadow: none;
   border-bottom: 2px solid #e02c3e;
   outline: 0;
-  color: #ecf0f5;
+  /* color: #ecf0f5; */
 }
 
 input:focus {
