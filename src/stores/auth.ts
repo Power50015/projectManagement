@@ -18,7 +18,6 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { async } from "@firebase/util";
 const auth = getAuth();
 const db = getFirestore();
 
@@ -63,6 +62,7 @@ const unsub = await onAuthStateChanged(auth, async (user) => {
           auth.photo = doc.data().photo;
           auth.projectId = doc.data().projectId;
           auth.departement = doc.data().departement;
+          auth.password = doc.data().password;
           auth.type = "admins";
         });
       }
@@ -96,6 +96,7 @@ export const useAuthStore = defineStore({
     projectId: "",
     departement: "",
     type: "",
+    password: "",
     load: false,
   }),
   actions: {
@@ -126,9 +127,13 @@ export const useAuthStore = defineStore({
         });
     },
     adminLogin(email: string, password: string) {
+      this.load = false;
       signInWithEmailAndPassword(auth, email, password)
         .then(async () => {
-          const q = query(collection(db, "admin"), where("email", "==", email));
+          const q = query(
+            collection(db, "admins"),
+            where("email", "==", email)
+          );
           const querySnapshot = await getDocs(q);
           querySnapshot.forEach((doc) => {
             this.isLogin = true;
@@ -136,7 +141,9 @@ export const useAuthStore = defineStore({
             this.name = doc.data().name;
             this.email = doc.data().email;
             this.photo = doc.data().photo;
-            this.type = "admin";
+            this.password = doc.data().password;
+            this.type = "admins";
+            this.load = true;
           });
         })
         .catch((error) => {
@@ -144,7 +151,88 @@ export const useAuthStore = defineStore({
           const errorMessage = error.message;
           console.log(errorCode);
           console.log(errorMessage);
+          this.load = true;
         });
+    },
+    logout() {
+      signOut(auth).then(() => {
+        this.isLogin = false;
+        this.userId = "";
+        this.name = "";
+        this.email = "";
+        this.photo = "";
+        this.projectId = "";
+        this.departement = "";
+        this.type = "";
+      });
+    },
+    addUser(
+      name: string,
+      email: string,
+      photo: string,
+      projectId: string,
+      departement: string,
+      password: string,
+      type: string
+    ) {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          // Add a new document in collection "doctors"
+          if (type == "doctors") {
+            addDoc(collection(db, type), {
+              name: name,
+              email: email,
+              photo: photo,
+              departement: departement,
+            });
+          } else if (type == "students") {
+            addDoc(collection(db, type), {
+              name: name,
+              email: email,
+              photo: photo,
+              projectId: projectId,
+              departement: departement,
+            });
+          } else {
+            addDoc(collection(db, type), {
+              name: name,
+              email: email,
+              photo: photo,
+            });
+          }
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode);
+          console.log(errorMessage);
+        });
+      setTimeout(() => {
+        signOut(auth).then(() => {
+          signInWithEmailAndPassword(auth, this.email, this.password);
+        });
+      }, 1500);
+    },
+    addProject(
+      title: string,
+      number: any,
+      year: any,
+      department: string,
+      des: string,
+      link: string,
+      image: string
+    ) {
+      addDoc(collection(db, "projects"), {
+        id: department + "-" + year + "-" + number,
+        title: title,
+        number: number,
+        year: year,
+        department: department,
+        des: des,
+        link: link,
+        image: image,
+      });
     },
   },
 });

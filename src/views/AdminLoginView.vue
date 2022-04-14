@@ -45,12 +45,10 @@ const email = ref<string>("myadmin@admin.com");
 const password = ref<string>("myadmin@admin.com");
 
 function adminLogin() {
-  auth.adminLogin(email.value, password.value);
-  console.log(auth);
-  
+  auth.adminLogin(email.value, password.value);  
   email.value = "";
   password.value = "";
-  // router.push("/");
+  router.push("/dashbord");
 }
 </script>
 

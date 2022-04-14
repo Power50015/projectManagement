@@ -1,8 +1,10 @@
 <template>
-  dsadsa
+  <AdminDashbord />
 </template>
 
-<script>
+<script lang="ts" setup>
+import AdminDashbord from "@/components/AdminDashbord.vue";
+
 </script>
 
 <style>
