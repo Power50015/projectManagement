@@ -77,7 +77,7 @@
               >
                 <li>
                   <router-link class="dropdown-item" to="/"
-                    >Profile</router-link
+                    >Home</router-link
                   >
                 </li>
                 <li><hr class="dropdown-divider" /></li>

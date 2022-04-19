@@ -38,6 +38,21 @@ const router = createRouter({
       name: "add-project",
       component: () => import("../views/AddProjectView.vue"),
     },
+    {
+      path: "/add-student",
+      name: "add-student",
+      component: () => import("../views/AddStudentView.vue"),
+    },
+    {
+      path: "/add-admin",
+      name: "add-admin",
+      component: () => import("../views/AddAdminView.vue"),
+    },
+    {
+      path: "/doctor-project/:id",
+      name: "doctor-project",
+      component: () => import("../views/DoctorProjectView.vue"),
+    },
   ],
 });
 

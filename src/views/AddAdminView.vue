@@ -2,64 +2,14 @@
   <div class="container">
     <div class="row pb-5">
       <div class="col-lg-6 col-md-8 login-box">
-        <div class="col-lg-12 login-title">Add Project</div>
+        <div class="col-lg-12 login-title">Add Admin</div>
 
         <div class="col-lg-12 login-form">
           <div class="col-lg-12 login-form">
-            <form @submit.prevent="saveProject">
+            <form @submit.prevent="saveUser">
               <div class="form-group">
-                <label class="form-control-label">Project Title</label>
-                <input type="text" class="form-control" v-model="title" />
-              </div>
-              <div class="form-group">
-                <label class="form-control-label">Project Number</label>
-                <input
-                  type="number"
-                  min="1"
-                  class="form-control"
-                  v-model="number"
-                />
-              </div>
-              <div class="form-group">
-                <label class="form-control-label">Project Year</label>
-                <input
-                  type="number"
-                  min="1999"
-                  class="form-control"
-                  v-model="year"
-                />
-              </div>
-              <div class="form-group">
-                <label class="form-control-label">Department</label>
-                <select class="form-control" v-model="department">
-                  <option value="mis">MIS</option>
-                  <option value="cs">CS</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-control-label">Doctor</label>
-                <select class="form-control" v-model="projectDoctor">
-                  <option
-                    v-for="doctor in doctorsData"
-                    :key="doctor.index"
-                    :value="doctor.email"
-                  >
-                    {{ doctor.name }} - {{ doctor.departement }}
-                  </option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-control-label">Project Details</label>
-                <textarea
-                  type="number"
-                  min="1999"
-                  class="form-control"
-                  v-model="des"
-                ></textarea>
-              </div>
-              <div class="form-group">
-                <label class="form-control-label">Project Link</label>
-                <input type="text" class="form-control" v-model="link" />
+                <label class="form-control-label">USERNAME</label>
+                <input type="text" class="form-control" v-model="name" />
               </div>
               <!-- Start image-->
               <div class="mb-3">
@@ -91,6 +41,18 @@
                 />
               </div>
               <!-- End image-->
+              <div class="form-group">
+                <label class="form-control-label">USEREMAIL</label>
+                <input type="text" class="form-control" v-model="email" />
+              </div>
+              <div class="form-group">
+                <label class="form-control-label">PASSWORD</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  v-model="password"
+                />
+              </div>
 
               <div class="col-lg-12 loginbttm">
                 <div class="col-lg-6 login-btm login-text">
@@ -102,7 +64,7 @@
                     class="btn btn-outline-primary"
                     :disabled="!btn"
                   >
-                    Save Project
+                    SAVE ADMIN
                   </button>
                 </div>
               </div>
@@ -112,19 +74,17 @@
       </div>
     </div>
     <div class="row text-center">
-      <div class="col col-lg-4" v-for="data in projectsData" :key="data.id">
+      <div class="col col-lg-3" v-for="item in adminsData" :key="item.index">
         <div>
           <img
-            class="bd-placeholder-img"
-            width="240"
-            height="240"
+            class="bd-placeholder-img rounded-circle"
+            width="140"
+            height="140"
             role="img"
-            :src="data.image"
+            :src="item.photo"
           />
-          <h6>ID: {{ data.id }}</h6>
-          <h2>{{ data.title }}</h2>
-          <h6>Departement: {{ data.department }}</h6>
-          <h6>year: {{ data.year }}</h6>
+          <h2>{{ item.name }}</h2>
+          <h6>{{ item.email }}</h6>
         </div>
       </div>
       <!-- /.col-lg-4 -->
@@ -154,53 +114,19 @@ const storage = getStorage();
 const router = useRouter();
 const auth = useAuthStore();
 
-const title = ref<string>("");
-const number = ref();
-const year = ref();
-const department = ref<string>("cs");
-const des = ref("");
-const link = ref("");
+const name = ref<string>("");
+const email = ref<string>("");
+const password = ref<string>("");
 const imgURL = ref<string>("");
 const imgData = reactive([]);
 const imgPreview = ref<any>("");
 const btn = ref(true);
 const imgUpload = ref(0);
-const projectDoctor = ref("");
-const projectsData = reactive([]);
-const doctorsData = reactive([]);
+const adminsData = reactive([]);
 
-getProjectsData();
-getDoctorsDatas();
+getAdminsData();
 
-function DetectFiles(input) {
-  imgData.value = input[0];
-  if (input) {
-    var reader = new FileReader();
-    reader.onload = (e) => {
-      imgPreview.value = e.target.result;
-    };
-    reader.readAsDataURL(input[0]);
-  }
-}
-
-
-async function getProjectsData() {
-  projectsData.length = 0;
-  const querySnapshot = await getDocs(collection(db, "projects"));
-  querySnapshot.forEach((doc) => {
-    projectsData.push(doc.data());
-  });
-}
-
-async function getDoctorsDatas() {
-  doctorsData.length = 0;
-  const querySnapshot = await getDocs(collection(db, "doctors"));
-  querySnapshot.forEach((doc) => {
-    doctorsData.push(doc.data());
-  });
-}
-
-function saveProject() {
+function saveUser() {
   btn.value = false;
   const storageRef = refire(storage, `${imgData.value.name}`);
   const uploadTask = uploadBytesResumable(storageRef, imgData.value);
@@ -218,38 +144,52 @@ function saveProject() {
       getDownloadURL(uploadTask.snapshot.ref).then((URL) => {
         btn.value = true;
         imgURL.value = URL;
-        auth.addProject(
-          title.value,
-          number.value,
-          year.value,
-          department.value,
-          des.value,
-          link.value,
+        auth.addUser(
+          name.value,
+          email.value,
           imgURL.value,
-          projectDoctor.value,
-          );
-        createToast("Save Project success", {
+          "",
+          "",
+          password.value,
+          "admins"
+        );
+        createToast("Save Admin success", {
           type: "success",
         });
         setTimeout(() => {
-          title.value = "";
-          number.value = "";
+          name.value = "";
+          email.value = "";
           imgURL.value = "";
-          des.value = "";
-          link.value = "";
-          year.value = "";
-          projectDoctor.value="";
-          department.value = "cs";
+          password.value = "";
           imgPreview.value = "";
           imgUpload.value = 0;
           imgData.length = 0;
-          getProjectsData();
+          getAdminsData();
         }, 1500);
 
         // router.push("/dashbord");
       });
     }
   );
+}
+
+function DetectFiles(input) {
+  imgData.value = input[0];
+  if (input) {
+    var reader = new FileReader();
+    reader.onload = (e) => {
+      imgPreview.value = e.target.result;
+    };
+    reader.readAsDataURL(input[0]);
+  }
+}
+
+async function getAdminsData() {
+  adminsData.length = 0;
+  const querySnapshot = await getDocs(collection(db, "admins"));
+  querySnapshot.forEach((doc) => {
+    adminsData.push(doc.data());
+  });
 }
 </script>
 
@@ -361,10 +301,8 @@ label {
 }
 .col div {
   background: rgba(238, 238, 238, 0.397);
+  padding: 17px 0;
   border-radius: 22px;
   margin-bottom: 15px;
-}
-.col div img{
-  width: 100%;
 }
 </style>

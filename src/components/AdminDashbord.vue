@@ -8,11 +8,11 @@
         <router-link to="/add-project" class="dashbord-btn">Add Project</router-link>
       </div>
      <div class="col-12 col-xl-3">
-        <router-link to="/" class="dashbord-btn">Add Student</router-link>
+        <router-link to="/add-student" class="dashbord-btn">Add Student</router-link>
       </div>
       
       <div class="col-12 col-xl-3">
-        <router-link to="/" class="dashbord-btn">Add Admin</router-link>
+        <router-link to="/add-admin" class="dashbord-btn">Add Admin</router-link>
       </div>
     </div>
   </div>

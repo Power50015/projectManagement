@@ -23,6 +23,7 @@ const db = getFirestore();
 
 // wait until auth is ready
 const unsub = await onAuthStateChanged(auth, async (user) => {
+  const auth = useAuthStore();
   if (user) {
     const q = query(
       collection(db, "doctors"),
@@ -42,7 +43,6 @@ const unsub = await onAuthStateChanged(auth, async (user) => {
         );
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-          const auth = useAuthStore();
           auth.userId = doc.id;
           auth.isLogin = true;
           auth.name = doc.data().name;
@@ -54,7 +54,6 @@ const unsub = await onAuthStateChanged(auth, async (user) => {
         });
       } else {
         querySnapshot.forEach((doc) => {
-          const auth = useAuthStore();
           auth.userId = doc.id;
           auth.isLogin = true;
           auth.name = doc.data().name;
@@ -68,7 +67,6 @@ const unsub = await onAuthStateChanged(auth, async (user) => {
       }
     } else {
       querySnapshot.forEach((doc) => {
-        const auth = useAuthStore();
         auth.userId = doc.id;
         auth.isLogin = true;
         auth.name = doc.data().name;
@@ -76,11 +74,10 @@ const unsub = await onAuthStateChanged(auth, async (user) => {
         auth.photo = doc.data().photo;
         auth.projectId = doc.data().projectId;
         auth.departement = doc.data().departement;
-        auth.type = "doctor";
+        auth.type = "doctors";
       });
     }
   }
-  const auth = useAuthStore();
   auth.load = true;
   unsub();
 });
@@ -116,7 +113,7 @@ export const useAuthStore = defineStore({
             this.photo = doc.data().photo;
             this.projectId = doc.data().projectId;
             this.departement = doc.data().departement;
-            this.type = "doctor";
+            this.type = "doctors";
           });
         })
         .catch((error) => {
@@ -199,6 +196,7 @@ export const useAuthStore = defineStore({
               name: name,
               email: email,
               photo: photo,
+              password:password
             });
           }
         })
@@ -221,7 +219,8 @@ export const useAuthStore = defineStore({
       department: string,
       des: string,
       link: string,
-      image: string
+      image: string,
+      projectDoctor:string
     ) {
       addDoc(collection(db, "projects"), {
         id: department + "-" + year + "-" + number,
@@ -232,6 +231,7 @@ export const useAuthStore = defineStore({
         des: des,
         link: link,
         image: image,
+        doctor:projectDoctor
       });
     },
   },
