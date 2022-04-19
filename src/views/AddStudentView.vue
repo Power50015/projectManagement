@@ -58,7 +58,7 @@
                 <select
                   class="form-control"
                   v-model="department"
-                  @change="getProjectsData()"
+                  @change="getProjectsData"
                 >
                   <option value="mis">MIS</option>
                   <option value="cs">CS</option>
@@ -119,7 +119,7 @@
 <script lang="ts" setup>
 import app from "@/firebase";
 import { getFirestore } from "firebase/firestore";
-import { collection, getDocs, where, query, orderBy  } from "firebase/firestore";
+import { collection, getDocs, where, query, orderBy } from "firebase/firestore";
 import { useAuthStore } from "@/stores/auth";
 import { reactive, ref } from "@vue/reactivity";
 import { computed } from "@vue/runtime-core";
@@ -220,21 +220,19 @@ async function getProjectsData() {
   const q = query(
     collection(db, "projects"),
     where("department", "==", department.value),
-    orderBy("number", "department")
   );
   const querySnapshot = await getDocs(q);
 
   querySnapshot.forEach((doc) => {
+    console.log(doc.data());
+
     projectsData.push(doc.data());
   });
 }
 async function getStudentsData() {
   studentsData.length = 0;
 
-const q = query(
-    collection(db, "students"),
-    orderBy("projectId")
-  );
+  const q = query(collection(db, "students"), orderBy("projectId"));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     studentsData.push(doc.data());

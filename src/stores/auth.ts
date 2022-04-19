@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import app from "../firebase";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore,serverTimestamp } from "firebase/firestore";
+
 import {
   doc,
   updateDoc,
@@ -232,6 +233,18 @@ export const useAuthStore = defineStore({
         link: link,
         image: image,
         doctor:projectDoctor
+      });
+    },
+    addTask(
+      task: string,
+      projectDoctor:string,
+      projectId:string
+    ) {
+      addDoc(collection(db, "requestedTasks"), {
+        task:task,
+        projectDoctor:projectDoctor,
+        projectId:projectId,
+        createdAt: serverTimestamp()
       });
     },
   },
