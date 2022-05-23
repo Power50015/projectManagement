@@ -6,14 +6,14 @@
 
         <div class="col-lg-12 login-form">
           <div class="col-lg-12 login-form">
-            <form>
+            <div>
               <div class="form-group">
                 <label class="form-control-label">USEREMAIL</label>
-                <input type="text" class="form-control" />
+                <input type="text" class="form-control" v-model="email"/>
               </div>
               <div class="form-group">
                 <label class="form-control-label">PASSWORD</label>
-                <input type="password" class="form-control" i />
+                <input type="password" class="form-control" v-model="password" />
               </div>
 
               <div class="col-lg-12 loginbttm">
@@ -21,12 +21,12 @@
                   <!-- Error Message -->
                 </div>
                 <div class="col-lg-12 login-btm login-button">
-                  <button type="submit" class="btn btn-outline-primary">
+                  <button type="submit" class="btn btn-outline-primary" @click="studentLogin">
                     LOGIN
                   </button>
                 </div>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </div>
@@ -34,7 +34,24 @@
   </div>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+//
+import { useAuthStore } from "@/stores/auth";
+import { ref } from "@vue/reactivity";
+import { useRouter } from "vue-router";
+const router = useRouter();
+const auth = useAuthStore();
+
+const email = ref<string>("ahmed@ahmed.ahmed");
+const password = ref<string>("ahmed@ahmed.ahmed");
+
+function studentLogin() {
+  auth.studentLogin(email.value, password.value);  
+  email.value = "";
+  password.value = "";
+  router.push("/dashbord");
+}
+</script>
 
 <style scoped>
 .row {
@@ -73,7 +90,7 @@ input {
   outline: 0;
   margin-bottom: 20px;
   padding-left: 0px;
-  color: #ecf0f5;
+  /* color: #ecf0f5; */
 }
 
 .form-group {

@@ -68,7 +68,7 @@
                   height="32"
                   class="rounded-circle"
                 />
-                {{auth.name}}
+                {{ auth.name }}
               </a>
               <ul
                 class="dropdown-menu text-small"
@@ -76,15 +76,11 @@
                 style=""
               >
                 <li>
-                  <router-link class="dropdown-item" to="/"
-                    >Home</router-link
-                  >
+                  <router-link class="dropdown-item" to="/">Home</router-link>
                 </li>
                 <li><hr class="dropdown-divider" /></li>
                 <li>
-                  <span class="dropdown-item" @click="auth.logout"
-                    >Sign out</span
-                  >
+                  <span class="dropdown-item" @click="logout">Sign out</span>
                 </li>
               </ul>
             </div>
@@ -97,8 +93,14 @@
 
 <script lang="ts" setup>
 import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const auth = useAuthStore();
+function logout() {
+  auth.logout();
+  router.push("/");
+}
 </script>
 
 <style scoped>

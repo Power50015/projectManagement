@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import app from "../firebase";
-import { getFirestore,serverTimestamp } from "firebase/firestore";
+import { getFirestore, serverTimestamp } from "firebase/firestore";
 
 import {
   doc,
@@ -19,6 +19,10 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
+
+import { createToast } from "mosha-vue-toastify";
+import "mosha-vue-toastify/dist/style.css";
+
 const auth = getAuth();
 const db = getFirestore();
 
@@ -112,9 +116,34 @@ export const useAuthStore = defineStore({
             this.name = doc.data().name;
             this.email = doc.data().email;
             this.photo = doc.data().photo;
-            this.projectId = doc.data().projectId;
             this.departement = doc.data().departement;
             this.type = "doctors";
+          });
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode);
+          console.log(errorMessage);
+        });
+    },
+    studentLogin(email: string, password: string) {
+      signInWithEmailAndPassword(auth, email, password)
+        .then(async () => {
+          const q = query(
+            collection(db, "students"),
+            where("email", "==", email)
+          );
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            this.isLogin = true;
+            this.userId = doc.id;
+            this.name = doc.data().name;
+            this.email = doc.data().email;
+            this.photo = doc.data().photo;
+            this.projectId = doc.data().projectId;
+            this.departement = doc.data().departement;
+            this.type = "students";
           });
         })
         .catch((error) => {
@@ -135,11 +164,10 @@ export const useAuthStore = defineStore({
           const querySnapshot = await getDocs(q);
           querySnapshot.forEach((doc) => {
             this.isLogin = true;
-            this.userId = doc.data().userId;
+            this.userId = doc.id;
             this.name = doc.data().name;
             this.email = doc.data().email;
             this.photo = doc.data().photo;
-            this.password = doc.data().password;
             this.type = "admins";
             this.load = true;
           });
@@ -197,7 +225,7 @@ export const useAuthStore = defineStore({
               name: name,
               email: email,
               photo: photo,
-              password:password
+              password: password,
             });
           }
         })
@@ -221,7 +249,7 @@ export const useAuthStore = defineStore({
       des: string,
       link: string,
       image: string,
-      projectDoctor:string
+      projectDoctor: string
     ) {
       addDoc(collection(db, "projects"), {
         id: department + "-" + year + "-" + number,
@@ -232,19 +260,7 @@ export const useAuthStore = defineStore({
         des: des,
         link: link,
         image: image,
-        doctor:projectDoctor
-      });
-    },
-    addTask(
-      task: string,
-      projectDoctor:string,
-      projectId:string
-    ) {
-      addDoc(collection(db, "requestedTasks"), {
-        task:task,
-        projectDoctor:projectDoctor,
-        projectId:projectId,
-        createdAt: serverTimestamp()
+        doctor: projectDoctor,
       });
     },
   },
