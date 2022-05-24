@@ -249,7 +249,8 @@ export const useAuthStore = defineStore({
       des: string,
       link: string,
       image: string,
-      projectDoctor: string
+      projectDoctor: string,
+      division:string
     ) {
       addDoc(collection(db, "projects"), {
         id: department + "-" + year + "-" + number,
@@ -261,6 +262,7 @@ export const useAuthStore = defineStore({
         link: link,
         image: image,
         doctor: projectDoctor,
+        division:division
       });
     },
   },

@@ -111,7 +111,7 @@
           <h6>{{ doctorEmail }}</h6>
           <h6>{{ doctorDepartement }}</h6>
         </div>
-        <p class="text-box text-start p-5 m-5 w-100">{{ des }}</p>
+        <p class="text-box text-start p-5 my-5 w-100">{{ des }}</p>
       </div>
       <div class="col-12 col-lg-3 text-box p-5">
         <h3>Requested Tasks</h3>
@@ -126,28 +126,32 @@
         <ul>
           <li v-for="data in rTaskData" :key="data.index" class="py-2">
             <h6 class="d-inline mx-3">{{ data.task }}</h6>
-            <a :href="data.attach" class="btn btn-primary">Download Attach</a>
+            <a :href="data.attach" class="btn btn-primary" download
+              >Download Attach</a
+            >
             <!-- Button trigger modal -->
             <button
               type="button"
               class="btn btn-primary mx-5"
               data-bs-toggle="modal"
-              data-bs-target="#studentModal"
+              :data-bs-target="`#studentModal${data.id}`"
             >
               Student
             </button>
             <!-- Modal -->
             <div
               class="modal fade"
-              id="studentModal"
+              :id="`studentModal${data.id}`"
               tabindex="-1"
               aria-labelledby="studentModalLabel"
               aria-hidden="true"
             >
               <div class="modal-dialog">
-                <form class="modal-content">
+                <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="studentModalLabel">Add Task</h5>
+                    <h5 class="modal-title" id="studentModalLabel">
+                      {{ data.studentName }}
+                    </h5>
                     <button
                       type="button"
                       class="btn-close"
@@ -156,39 +160,15 @@
                     ></button>
                   </div>
                   <div class="modal-body">
-                    <!-- Start image-->
-                    <div class="mb-3">
-                      <label for="formFile" class="form-label"
-                        >Task Attach</label
-                      >
-                      <div class="flex">
-                        <h6 class="mb-3 text-white">
-                          upload states :
-                          <span v-if="imgUpload == 100">100%</span>
-                        </h6>
-                      </div>
-                      <input
-                        class="form-control"
-                        type="file"
-                        id="formFile"
-                        @change="DetectFiles($event.target.files)"
-                      />
-                    </div>
-                    <!-- End image-->
-                    <textarea class="w-100" cols="30" rows="10" v-model="task">
-                    </textarea>
+                    <img
+                      class="bd-placeholder-img rounded-circle"
+                      width="140"
+                      height="140"
+                      role="img"
+                      :src="data.studentPhoto"
+                    />
                   </div>
-                  <div class="modal-footer">
-                    <button
-                      type="button"
-                      class="btn btn-primary w-100"
-                      data-bs-dismiss="modal"
-                      @click="addTask"
-                    >
-                      Add Response Tasks
-                    </button>
-                  </div>
-                </form>
+                </div>
               </div>
             </div>
           </li>
@@ -351,11 +331,48 @@ async function getRTaskData() {
 
   const querySnapshot = await getDocs(q);
 
-  querySnapshot.forEach((doc) => {
+  querySnapshot.forEach(async (doc) => {
     if (doc.data()["projectId"] == auth.projectId) {
-      rTaskData.push(doc.data());
+      rTaskData.push({
+        studentName: await getStudentName(doc.data().student),
+        studentPhoto: await getStudentPhoto(doc.data().student),
+        id:doc.id,
+        ...doc.data(),
+      });
     }
   });
+}
+
+async function getStudentName(studentEmail: any) {
+  let student;
+  const q = query(
+    collection(db, "students"),
+    where("email", "==", studentEmail)
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach((doc) => {
+    student = doc.data().name;
+  });
+
+  return student;
+}
+
+async function getStudentPhoto(studentEmail: any) {
+  let student;
+  const q = query(
+    collection(db, "students"),
+    where("email", "==", studentEmail)
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach((doc) => {
+    student = doc.data().photo;
+  });
+
+  return student;
 }
 
 function DetectFiles(input) {

@@ -37,6 +37,27 @@
                 </select>
               </div>
               <div class="form-group">
+                <label class="form-control-label">Division</label>
+                <select class="form-control" v-model="division">
+                  <option value="Computer Engineering - Computer Network">
+                    Computer Engineering - Computer Network
+                  </option>
+                  <option value="Computer Engineering - Cybersecurity">
+                    Computer Engineering - Cybersecurity
+                  </option>
+                  <option value="AI - Pattern Recognition">
+                    AI - Pattern Recognition
+                  </option>
+                  <option value="AI - Robotics">AI - Robotics</option>
+                  <option value="Marketing - Digital Marketing">
+                    Marketing - Digital Marketing
+                  </option>
+                  <option value="Marketing - Conversational Marketing">
+                    Marketing - Conversational Marketing
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
                 <label class="form-control-label">Doctor</label>
                 <select class="form-control" v-model="projectDoctor">
                   <option
@@ -158,6 +179,7 @@ const title = ref<string>("");
 const number = ref();
 const year = ref();
 const department = ref<string>("cs");
+const division = ref<string>("Computer Engineering - Computer Network");
 const des = ref("");
 const link = ref("");
 const imgURL = ref<string>("");
@@ -182,7 +204,6 @@ function DetectFiles(input) {
     reader.readAsDataURL(input[0]);
   }
 }
-
 
 async function getProjectsData() {
   projectsData.length = 0;
@@ -227,7 +248,8 @@ function saveProject() {
           link.value,
           imgURL.value,
           projectDoctor.value,
-          );
+          division.value
+        );
         createToast("Save Project success", {
           type: "success",
         });
@@ -238,8 +260,9 @@ function saveProject() {
           des.value = "";
           link.value = "";
           year.value = "";
-          projectDoctor.value="";
+          projectDoctor.value = "";
           department.value = "cs";
+          division.value ="Computer Engineering - Computer Network";
           imgPreview.value = "";
           imgUpload.value = 0;
           imgData.length = 0;
@@ -364,7 +387,7 @@ label {
   border-radius: 22px;
   margin-bottom: 15px;
 }
-.col div img{
+.col div img {
   width: 100%;
 }
 </style>

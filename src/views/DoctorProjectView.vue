@@ -80,7 +80,7 @@
       <div class="col-12">
         <p class="text-box text-start p-5 m-5">{{ des }}</p>
       </div>
-      <div class="col-12 col-lg-6">
+      <div class="col-12 col-lg-3">
         <h3>Requested Tasks</h3>
         <ul>
           <li v-for="data in taskData" :key="data.index" class="py-2">
@@ -88,8 +88,58 @@
           </li>
         </ul>
       </div>
-      <div class="col-12 col-lg-6">
+      <div class="col-12 col-lg-9">
         <h3>Response Tasks</h3>
+        <ul>
+          <li v-for="data in rTaskData" :key="data.index" class="py-2">
+            <h6 class="d-inline mx-3">{{ data.task }}</h6>
+            <a :href="data.attach" class="btn btn-primary" download
+              >Download Attach</a
+            >
+            <!-- Button trigger modal -->
+            <button
+              type="button"
+              class="btn btn-primary mx-5"
+              data-bs-toggle="modal"
+              :data-bs-target="`#studentModal${data.id}`"
+            >
+              Student
+            </button>
+            <!-- Modal -->
+            <div
+              class="modal fade"
+              :id="`studentModal${data.id}`"
+              tabindex="-1"
+              aria-labelledby="studentModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="studentModalLabel">
+                      {{ data.studentName }}
+                    </h5>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <img
+                      class="bd-placeholder-img rounded-circle"
+                      width="140"
+                      height="140"
+                      role="img"
+                      :src="data.studentPhoto"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -119,6 +169,8 @@ const des = ref("");
 const image = ref("");
 
 const task = ref();
+
+const rTaskData = reactive([]);
 
 getProjectsData();
 getStudentsData();
@@ -180,7 +232,57 @@ async function getTaskData() {
       taskData.push(doc.data());
     }
   });
+}
+getRTaskData();
 
+async function getRTaskData() {
+  rTaskData.length = 0;
+  const q = query(collection(db, "responseTasks"), orderBy("createdAt"));
+
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach(async (doc) => {
+    if (doc.data()["projectId"] == route.params.id) {
+      rTaskData.push({
+        studentName: await getStudentName(doc.data().student),
+        studentPhoto: await getStudentPhoto(doc.data().student),
+        id: doc.id,
+        ...doc.data(),
+      });
+    }
+  });
+}
+
+async function getStudentName(studentEmail: any) {
+  let student;
+  const q = query(
+    collection(db, "students"),
+    where("email", "==", studentEmail)
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach((doc) => {
+    student = doc.data().name;
+  });
+
+  return student;
+}
+
+async function getStudentPhoto(studentEmail: any) {
+  let student;
+  const q = query(
+    collection(db, "students"),
+    where("email", "==", studentEmail)
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach((doc) => {
+    student = doc.data().photo;
+  });
+
+  return student;
 }
 </script>
 
