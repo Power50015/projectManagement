@@ -113,19 +113,33 @@
         </div>
         <p class="text-box text-start p-5 my-5 w-100">{{ des }}</p>
       </div>
-      <div class="col-12 col-lg-3 text-box p-5">
+      <div class="col-12 col-lg-3">
         <h3>Requested Tasks</h3>
         <ul>
-          <li v-for="data in taskData" :key="data.index" class="py-2">
+          <li
+            v-for="data in taskData"
+            :key="data.index"
+            class="py-2 my-2 bg-secondary text-white"
+          >
             <h6>{{ data.task }}</h6>
+            <h6 class="d-inline mx-3">
+              {{ data.createdAt.toDate().toDateString() }}
+            </h6>
           </li>
         </ul>
       </div>
       <div class="col-12 col-lg-9">
         <h3>Response Tasks</h3>
         <ul>
-          <li v-for="data in rTaskData" :key="data.index" class="py-2">
+          <li
+            v-for="data in rTaskData"
+            :key="data.index"
+            class="py-2 my-3 bg-secondary text-white"
+          >
             <h6 class="d-inline mx-3">{{ data.task }}</h6>
+            <h6 class="d-inline mx-3">
+              {{ data.createdAt.toDate().toDateString() }}
+            </h6>
             <a :href="data.attach" class="btn btn-primary" download
               >Download Attach</a
             >
@@ -312,14 +326,16 @@ getTaskData();
 
 async function getTaskData() {
   taskData.length = 0;
-  const q = query(collection(db, "requestedTasks"), orderBy("createdAt"));
+  const q = query(
+    collection(db, "requestedTasks"),
+    orderBy("createdAt"),
+    where("projectId", "==", auth.projectId)
+  );
 
   const querySnapshot = await getDocs(q);
 
   querySnapshot.forEach((doc) => {
-    if (doc.data()["projectId"] == auth.projectId) {
-      taskData.push(doc.data());
-    }
+    taskData.push(doc.data());
   });
 }
 
@@ -327,19 +343,21 @@ getRTaskData();
 
 async function getRTaskData() {
   rTaskData.length = 0;
-  const q = query(collection(db, "responseTasks"), orderBy("createdAt"));
+  const q = query(
+    collection(db, "responseTasks"),
+    orderBy("createdAt"),
+    where("projectId", "==", auth.projectId)
+  );
 
   const querySnapshot = await getDocs(q);
 
   querySnapshot.forEach(async (doc) => {
-    if (doc.data()["projectId"] == auth.projectId) {
-      rTaskData.push({
-        studentName: await getStudentName(doc.data().student),
-        studentPhoto: await getStudentPhoto(doc.data().student),
-        id:doc.id,
-        ...doc.data(),
-      });
-    }
+    rTaskData.push({
+      studentName: await getStudentName(doc.data().student),
+      studentPhoto: await getStudentPhoto(doc.data().student),
+      id: doc.id,
+      ...doc.data(),
+    });
   });
 }
 

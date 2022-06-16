@@ -83,16 +83,30 @@
       <div class="col-12 col-lg-3">
         <h3>Requested Tasks</h3>
         <ul>
-          <li v-for="data in taskData" :key="data.index" class="py-2">
+          <li
+            v-for="data in taskData"
+            :key="data.index"
+            class="py-2 my-2 bg-secondary text-white"
+          >
             <h6>{{ data.task }}</h6>
+            <h6 class="d-inline mx-3">
+              {{ data.createdAt.toDate().toDateString() }}
+            </h6>
           </li>
         </ul>
       </div>
       <div class="col-12 col-lg-9">
         <h3>Response Tasks</h3>
         <ul>
-          <li v-for="data in rTaskData" :key="data.index" class="py-2">
+          <li
+            v-for="data in rTaskData"
+            :key="data.index"
+            class="py-2 my-3 bg-secondary text-white"
+          >
             <h6 class="d-inline mx-3">{{ data.task }}</h6>
+            <h6 class="d-inline mx-3">
+              {{ data.createdAt.toDate().toDateString() }}
+            </h6>
             <a :href="data.attach" class="btn btn-primary" download
               >Download Attach</a
             >
@@ -223,33 +237,37 @@ getTaskData();
 
 async function getTaskData() {
   taskData.length = 0;
-  const q = query(collection(db, "requestedTasks"), orderBy("createdAt"));
+  const q = query(
+    collection(db, "requestedTasks"),
+    orderBy("createdAt"),
+    where("projectId", "==", route.params.id)
+  );
 
   const querySnapshot = await getDocs(q);
 
   querySnapshot.forEach((doc) => {
-    if (doc.data()["projectId"] == route.params.id) {
-      taskData.push(doc.data());
-    }
+    taskData.push(doc.data());
   });
 }
 getRTaskData();
 
 async function getRTaskData() {
   rTaskData.length = 0;
-  const q = query(collection(db, "responseTasks"), orderBy("createdAt"));
+  const q = query(
+    collection(db, "responseTasks"),
+    orderBy("createdAt"),
+    where("projectId", "==", route.params.id)
+  );
 
   const querySnapshot = await getDocs(q);
 
   querySnapshot.forEach(async (doc) => {
-    if (doc.data()["projectId"] == route.params.id) {
-      rTaskData.push({
-        studentName: await getStudentName(doc.data().student),
-        studentPhoto: await getStudentPhoto(doc.data().student),
-        id: doc.id,
-        ...doc.data(),
-      });
-    }
+    rTaskData.push({
+      studentName: await getStudentName(doc.data().student),
+      studentPhoto: await getStudentPhoto(doc.data().student),
+      id: doc.id,
+      ...doc.data(),
+    });
   });
 }
 
